@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "809278121159",
+    "firebase_url": "https://pokebase-cad1b.firebaseio.com",
+    "project_id": "pokebase-cad1b",
+    "storage_bucket": "pokebase-cad1b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809278121159:android:3e3214ed16d35bc0",
+        "android_client_info": {
+          "package_name": "com.example.nomis.androidpokedex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "809278121159-0ubkgsrop7eik07j5vgbcc5uv5o45og7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABd1CsSZvxCUAt7_cIUdz9DCnXHYRebzE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
