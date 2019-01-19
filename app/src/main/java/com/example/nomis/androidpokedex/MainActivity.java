@@ -1,13 +1,201 @@
 package com.example.nomis.androidpokedex;
 
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
+    ArrayList<Drawable> sprites = new ArrayList<>();
+    ArrayList<String> pokemonNames = new ArrayList<>();
+    ArrayList<String> classifications = new ArrayList<>();
+
+    CustomAdapter  customAdapter;
+
+    String id = "#-1"; // A default value to show ID is not called correctly. Also prevents nullpointerexceptions.
+    String pokemonName = "Placeholder"; // Same goes for this string
+
+    private RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        requestQueue = Volley.newRequestQueue(this);
+
+        classifications.add("Seed pokémon");
+        classifications.add("Seed pokémon");
+        classifications.add("Seed pokémon");
+        classifications.add("Lizard pokémon");
+        classifications.add("Flame pokémon");
+        classifications.add("Flame pokémon");
+        classifications.add("Tiny turtle pokémon");
+        classifications.add("Turtle pokémon");
+        classifications.add("Turtle pokémon");
+        classifications.add("Worm pokémon");
+
+        for(int i= 0; i < 141; i++){
+            classifications.add("test");
+        }
+
+
+
+        getPokemonData();
+
     }
+
+    private void getPokemonData() {
+        String url = "https://pokeapi.co/api/v2/pokedex/kanto/";
+        Log.d("debugs", url);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+
+                            Log.d("debug", "try block triggered");
+
+                            JSONArray entriesArray = response.getJSONArray("pokemon_entries");
+
+                            for(int i = 0; i< entriesArray.length(); i++){
+                                JSONObject entriesIndex = entriesArray.getJSONObject(i);
+
+                                JSONObject speciesInfo = entriesIndex.getJSONObject("pokemon_species");
+
+                                pokemonName = speciesInfo.getString("name");
+
+                                id = "#" + entriesIndex.getString("entry_number");
+
+                                pokemonName = pokemonName.substring(0, 1).toUpperCase() +
+                                        pokemonName.substring(1); // Capitalize first letter.
+
+                                pokemonName = id + " - " + pokemonName;
+
+                                pokemonNames.add(pokemonName);
+
+                            }
+
+                            JSONArray gameIndexArray = response.getJSONArray("game_indices");
+
+                            for(int i = 0; i < gameIndexArray.length(); i++){
+                                // Do something
+                            }
+
+                        } catch (JSONException e) {
+                            Log.e("debugs", "onResponse catch block triggered");
+                            e.printStackTrace();
+                        } finally {
+
+                            Log.d("debugs", "Finally block triggered");
+
+                            customAdapter = new CustomAdapter();
+
+                            ListView pokedexlist = (ListView)  findViewById(R.id.pokedexlist);
+
+                            pokedexlist.setAdapter(customAdapter);
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Log.e("debugs", "onErrorResponse code triggered");
+            }
+        });
+
+        Thread webAccessThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    for(int i = 1; i <= 151; i++) {
+                        sprites.add(spriteFromWeb(i));
+                    }
+                } catch (Exception e){
+                    Log.d("debugs", "an error has occured.");
+                }
+            }
+        });
+
+        requestQueue.add(request);
+
+        webAccessThread.start();
+
+        customAdapter.notifyDataSetChanged();
+
+    }
+
+    public Drawable spriteFromWeb(int id){
+        String url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + id + ".png";
+        InputStream inputStream = null;
+        try {
+            inputStream = (InputStream) new URL(url).getContent();
+            Drawable sprite = Drawable.createFromStream(inputStream, "" + id + ".png");
+            return sprite;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    class CustomAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+            return sprites.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+
+            Log.d("debugs", "Array call triggered");
+
+            view = getLayoutInflater().inflate(R.layout.customlayout, null);
+
+            ImageView spriteView = (ImageView) view.findViewById(R.id.spriteView);
+            TextView pokemonName = (TextView) view.findViewById(R.id.pokemonName);
+            TextView pokemonClassification = (TextView) view.findViewById(R.id.pokemonClassification);
+
+            spriteView.setImageDrawable(sprites.get(i));
+            pokemonName.setText(pokemonNames.get(i));
+            pokemonClassification.setText(classifications.get(i));
+
+            return view;
+        }
+    }
+
 }
