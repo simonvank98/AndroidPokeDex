@@ -30,6 +30,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     ArrayList<Drawable> sprites = new ArrayList<>();
+    ArrayList<Drawable> spritesHelper = new ArrayList<>();
     ArrayList<String> pokemonNames = new ArrayList<>();
     ArrayList<String> classifications = new ArrayList<>();
 
@@ -61,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
         for(int i= 0; i < 141; i++){
             classifications.add("test");
         }
-
-
 
         getPokemonData();
 
@@ -100,12 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
                             }
 
-                            JSONArray gameIndexArray = response.getJSONArray("game_indices");
-
-                            for(int i = 0; i < gameIndexArray.length(); i++){
-                                // Do something
-                            }
-
                         } catch (JSONException e) {
                             Log.e("debugs", "onResponse catch block triggered");
                             e.printStackTrace();
@@ -117,7 +110,32 @@ public class MainActivity extends AppCompatActivity {
 
                             ListView pokedexlist = (ListView)  findViewById(R.id.pokedexlist);
 
+                            Thread webAccessThread = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        for(int i = 1; i <= 151; i++) {
+                                            spritesHelper.add(spriteFromWeb(i));
+                                        }
+                                    } catch (Exception e){
+                                        Log.e("debugs", "an error has occured.");
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+
+                            webAccessThread.start();
+
+                            while(sprites.size() < 151){
+                                sprites = spritesHelper;
+                            }
+
+                            customAdapter.notifyDataSetChanged();
+
+
+
                             pokedexlist.setAdapter(customAdapter);
+
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -128,24 +146,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Thread webAccessThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    for(int i = 1; i <= 151; i++) {
-                        sprites.add(spriteFromWeb(i));
-                    }
-                } catch (Exception e){
-                    Log.d("debugs", "an error has occured.");
-                }
-            }
-        });
+
 
         requestQueue.add(request);
-
-        webAccessThread.start();
-
-        customAdapter.notifyDataSetChanged();
 
     }
 
@@ -157,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
             Drawable sprite = Drawable.createFromStream(inputStream, "" + id + ".png");
             return sprite;
         } catch (IOException e) {
+            Log.e("debugs", "An error has occured in spriteFromWeb");
             e.printStackTrace();
         }
         return null;
