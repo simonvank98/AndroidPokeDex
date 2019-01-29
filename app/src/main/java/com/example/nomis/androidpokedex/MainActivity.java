@@ -1,6 +1,7 @@
 package com.example.nomis.androidpokedex;
 
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -11,20 +12,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawer;
 
-    ArrayList<Drawable> sprites = new ArrayList<>();
-    ArrayList<Drawable> spritesHelper = new ArrayList<>();
-    ArrayList<String> pokemonNames = new ArrayList<>();
-    ArrayList<String> classifications = new ArrayList<>();
-
-    CustomAdapter  customAdapter;
-
-    String id = "#-1"; // A default value to show ID is not called correctly. Also prevents nullpointerexceptions.
-    String pokemonName = "Placeholder"; // Same goes for this string
-
-    private RequestQueue requestQueue;
+//    ArrayList<Drawable> sprites = new ArrayList<>();
+//    ArrayList<Drawable> spritesHelper = new ArrayList<>();
+//    ArrayList<String> pokemonNames = new ArrayList<>();
+//    ArrayList<String> classifications = new ArrayList<>();
+//
+//    CustomAdapter  customAdapter;
+//
+//    String id = "#-1"; // A default value to show ID is not called correctly. Also prevents nullpointerexceptions.
+//    String pokemonName = "Placeholder"; // Same goes for this string
+//
+//    private RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
