@@ -14,6 +14,18 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawer;
 
+    ArrayList<Drawable> sprites = new ArrayList<>();
+    ArrayList<Drawable> spritesHelper = new ArrayList<>();
+    ArrayList<String> pokemonNames = new ArrayList<>();
+    ArrayList<String> classifications = new ArrayList<>();
+
+    CustomAdapter  customAdapter;
+
+    String id = "#-1"; // A default value to show ID is not called correctly. Also prevents nullpointerexceptions.
+    String pokemonName = "Placeholder"; // Same goes for this string
+
+    private RequestQueue requestQueue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //standard code
