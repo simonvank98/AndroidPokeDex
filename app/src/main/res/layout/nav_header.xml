@@ -9,6 +9,7 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
+        android:contentDescription="@string/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@mipmap/ic_launcher_round" />
@@ -17,7 +18,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
-        android:text="PokeNav"
+        android:text="@string/pokenav"
+        android:contentDescription="@string/description"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
 

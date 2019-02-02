@@ -1,9 +1,11 @@
 package com.example.nomis.androidpokedex;
 
+import android.app.Fragment;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,14 +31,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
-
 public class Pokedex extends Fragment {
 
     //fragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.pokedex, container, false);
+        return inflater.inflate(R.Layout.pokedex, false);
     }
 
     ArrayList<Drawable> sprites = new ArrayList<>();
@@ -51,11 +52,12 @@ public class Pokedex extends Fragment {
 
     private RequestQueue requestQueue;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requestQueue = Volley.newRequestQueue(this);
+        requestQueue = Volley.newRequestQueue(getContext());
 
         classifications.add("Seed pokémon");
         classifications.add("Seed pokémon");
@@ -192,6 +194,7 @@ public class Pokedex extends Fragment {
             return 0;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
 

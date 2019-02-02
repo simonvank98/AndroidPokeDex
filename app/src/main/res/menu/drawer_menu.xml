@@ -6,11 +6,11 @@
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_main"
             android:icon="@mipmap/baseline_list_black_24dp"
-            android:title="Pokedex"/>
+            android:title="@string/pokedexscreen_name"/>
 
         <item android:id="@+id/nav_favorite"
             android:icon="@mipmap/baseline_favorite_border_black_24dp"
-            android:title="Favorites"/>
+            android:title="@string/favoritesscreen_name"/>
     </group>
 
 </menu>
