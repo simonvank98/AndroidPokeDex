@@ -1,11 +1,11 @@
 package com.example.nomis.androidpokedex;
 
-import android.app.Fragment;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +37,7 @@ public class Pokedex extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.Layout.pokedex, false);
+        return inflater.inflate(R.layout.pokedex, null);
     }
 
     ArrayList<Drawable> sprites = new ArrayList<>();
@@ -119,7 +119,7 @@ public class Pokedex extends Fragment {
 
                             customAdapter = new CustomAdapter();
 
-                            ListView pokedexlist = (ListView)  findViewById(R.id.pokedexlist);
+                            ListView pokedexlist = (ListView)  getView().findViewById(R.id.pokedexlist);
 
                             Thread webAccessThread = new Thread(new Runnable() {
                                 @Override
