@@ -210,6 +210,9 @@ public class Pokedex extends Fragment {
             pokemonName.setText(pokemonNames.get(i));
             pokemonClassification.setText(classifications.get(i));
 
+            spriteView.setScaleX((float)1.5);
+            spriteView.setScaleY((float)1.5);
+
             return view;
         }
     }

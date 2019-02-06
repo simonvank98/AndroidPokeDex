@@ -14,25 +14,29 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="36dp"
         android:layout_marginTop="34dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/spriteborder"
         app:srcCompat="@mipmap/ic_launcher" />
 
     <TextView
-        android:textSize="25sp"
         android:id="@+id/pokemonName"
         android:layout_width="239dp"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/spriteView"
         android:layout_alignParentStart="true"
         android:layout_marginStart="142dp"
-        android:text="" />
+        android:layout_marginTop="-8dp"
+        android:text=""
+        android:textSize="25sp" />
 
     <TextView
-        android:textSize="15sp"
         android:id="@+id/pokemonClassification"
         android:layout_width="238dp"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/pokemonName"
         android:layout_alignBottom="@+id/spriteView"
-        android:layout_marginBottom="-1dp"
-        android:text="" />
+        android:layout_marginStart="1dp"
+        android:layout_marginBottom="9dp"
+        android:text=""
+        android:textSize="15sp" />
 </RelativeLayout>
