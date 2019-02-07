@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "809278121159-cfu9ovvlffnmvfcv2298q0cmcsemo0pc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nomis.androidpokedex",
+            "certificate_hash": "861901a7fbf0b17ec82a4997330b9386c89b1357"
+          }
+        },
+        {
           "client_id": "809278121159-0ubkgsrop7eik07j5vgbcc5uv5o45og7.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "809278121159-0ubkgsrop7eik07j5vgbcc5uv5o45og7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
