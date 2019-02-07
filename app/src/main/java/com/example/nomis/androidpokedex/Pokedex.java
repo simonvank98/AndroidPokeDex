@@ -3,6 +3,7 @@ package com.example.nomis.androidpokedex;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,6 +52,8 @@ public class Pokedex extends Fragment {
     ArrayList<String> pokemonNames = new ArrayList<>();
     ArrayList<String> classifications = new ArrayList<>();
 
+    DatabaseReference dbclassifications;
+
     CustomAdapter  customAdapter;
 
     String id = "#-1"; // A default value to show ID is not called correctly. Also prevents nullpointerexceptions.
@@ -56,6 +65,27 @@ public class Pokedex extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        dbclassifications = FirebaseDatabase.getInstance().getReference("classifications");
+
+        dbclassifications.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                classifications.clear();
+
+                for(DataSnapshot classificationSnap : dataSnapshot.getChildren()){
+                    Classification cls = classificationSnap.getValue(Classification.class);
+
+                    classifications.add(cls.getClassification() + " Pokémon");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         requestQueue = Volley.newRequestQueue(getContext());
 
@@ -80,7 +110,6 @@ public class Pokedex extends Fragment {
 
     private void getPokemonData() {
         String url = "https://pokeapi.co/api/v2/pokedex/kanto/";
-        Log.d("debugs", url);
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -111,11 +140,9 @@ public class Pokedex extends Fragment {
                             }
 
                         } catch (JSONException e) {
-                            Log.e("debugs", "onResponse catch block triggered");
                             e.printStackTrace();
                         } finally {
 
-                            Log.d("debugs", "Finally block triggered");
 
                             customAdapter = new CustomAdapter();
 
@@ -129,7 +156,6 @@ public class Pokedex extends Fragment {
                                             spritesHelper.add(spriteFromWeb(i));
                                         }
                                     } catch (Exception e){
-                                        Log.e("debugs", "an error has occured.");
                                         e.printStackTrace();
                                     }
                                 }
@@ -153,7 +179,6 @@ public class Pokedex extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Log.e("debugs", "onErrorResponse code triggered");
             }
         });
 
@@ -171,7 +196,6 @@ public class Pokedex extends Fragment {
             Drawable sprite = Drawable.createFromStream(inputStream, "" + id + ".png");
             return sprite;
         } catch (IOException e) {
-            Log.e("debugs", "An error has occured in spriteFromWeb");
             e.printStackTrace();
         }
         return null;
