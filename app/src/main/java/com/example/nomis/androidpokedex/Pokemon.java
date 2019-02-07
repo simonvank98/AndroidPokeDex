@@ -29,9 +29,11 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class Pokemon extends AppCompatActivity {
-    private Drawable sprite;
+    private ImageView pokemonSprite;
     private RequestQueue mQueue;
     private TextView pokemonAbilityTextView;
+    private TextView pokemonNameTextView;
+    private TextView pokemonTypeTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +41,18 @@ public class Pokemon extends AppCompatActivity {
         setContentView(R.layout.pokemon);
 
         Bundle extras = getIntent().getExtras();
-        final int pokemonId = extras.getInt("pokemonId");
+        int pokemonId = extras.getInt("pokemonId");
 
         // pokemon name with #number
-        final String pokemonName = extras.getString("pokemonName");
+        String pokemonName = extras.getString("pokemonName");
 
-
+        // initialize xml objects
+        pokemonSprite = findViewById(R.id.pokemonSprite);
         pokemonAbilityTextView = findViewById(R.id.pokemonAblitiy);
+        pokemonTypeTextView = findViewById(R.id.pokemonType);
+        pokemonNameTextView = findViewById(R.id.pokemonName);
+        pokemonNameTextView.append(pokemonName);
+
         mQueue = Volley.newRequestQueue(this);
         jsonParse(pokemonId);
     }
@@ -58,6 +65,22 @@ public class Pokemon extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+
+                            // sprites
+//                            sprite = spriteFromWeb(pokemonId);
+//                            pokemonSprite.setImageDrawable(something);
+
+                            // types
+                            JSONArray jsonArrayType = response.getJSONArray("types");
+                            for (int j = 0; j < jsonArrayType.length(); j++) {
+                                JSONObject typeObject = jsonArrayType.getJSONObject(j);
+                                JSONObject type = typeObject.getJSONObject("type");
+
+                                String typeName = type.getString("name");
+
+                                pokemonTypeTextView.append(typeName + " ");
+                            }
+
                             // ability names
                             JSONArray jsonArrayAbility = response.getJSONArray("abilities");
                             for (int i = 0; i < jsonArrayAbility.length(); i++) {
@@ -68,16 +91,7 @@ public class Pokemon extends AppCompatActivity {
 
 //                                pokemonAbilityTextView.append(abilityName + "\n");
                             }
-                            // types
-                            JSONArray jsonArrayType = response.getJSONArray("types");
-                            for (int j = 0; j < jsonArrayType.length(); j++) {
-                                JSONObject typeObject = jsonArrayType.getJSONObject(j);
-                                JSONObject type = typeObject.getJSONObject("type");
 
-                                String typeName = type.getString("name");
-
-//                                pokemonAbilityTextView.append(typeName + "\n");
-                            }
 
                             // height
                             double heightDouble = response.getDouble("height");
@@ -107,12 +121,6 @@ public class Pokemon extends AppCompatActivity {
         mQueue.add(request);
 
     }
-
-
-
-
-
-
 
     @Override
     protected void onDestroy() {
