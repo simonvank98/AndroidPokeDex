@@ -161,8 +161,11 @@ public class Pokedex extends Fragment {
 
                                     // start new activity upon clicking an item in the listview
                                     Intent myIntent = new Intent(getContext(), Pokemon.class);
+                                    String name = pokemonNames.get(i);
                                     pokemonId = i + 1;
                                     myIntent.putExtra("pokemonId", pokemonId);
+                                    myIntent.putExtra("pokemonName", name);
+
 
                                     startActivity(myIntent);
 
