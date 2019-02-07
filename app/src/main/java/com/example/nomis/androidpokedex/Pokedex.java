@@ -1,5 +1,6 @@
 package com.example.nomis.androidpokedex;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -32,7 +35,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class Pokedex extends Fragment {
-
+    private int pokemonId;
     //fragment
     @Nullable
     @Override
@@ -76,7 +79,10 @@ public class Pokedex extends Fragment {
 
         getPokemonData();
 
+
     }
+
+
 
     private void getPokemonData() {
         String url = "https://pokeapi.co/api/v2/pokedex/kanto/";
@@ -120,6 +126,21 @@ public class Pokedex extends Fragment {
                             customAdapter = new CustomAdapter();
 
                             ListView pokedexlist = (ListView)  getView().findViewById(R.id.pokedexlist);
+
+                            pokedexlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                                @Override
+                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                                    // start new activity upon clicking an item in the listview
+                                    Intent myIntent = new Intent(getContext(), Pokemon.class);
+                                    pokemonId = i + 1;
+                                    myIntent.putExtra("pokemonId", pokemonId);
+
+                                    startActivity(myIntent);
+
+                                }
+                            });
 
                             Thread webAccessThread = new Thread(new Runnable() {
                                 @Override
