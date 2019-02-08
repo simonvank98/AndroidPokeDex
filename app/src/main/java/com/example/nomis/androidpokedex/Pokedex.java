@@ -18,7 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,7 +52,6 @@ import java.util.ArrayList;
 
 public class Pokedex extends Fragment {
     private int pokemonId;
-    private Pokemon pokemonscreen = new Pokemon();
     //fragment
     @Nullable
     @Override
@@ -176,6 +177,8 @@ public class Pokedex extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
 
+                            Log.d("debug", "try block triggered");
+
                             JSONArray entriesArray = response.getJSONArray("pokemon_entries");
 
                             for(int i = 0; i< entriesArray.length(); i++){
@@ -199,6 +202,8 @@ public class Pokedex extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } finally {
+
+
                             customAdapter = new CustomAdapter();
 
                             ListView pokedexlist = (ListView)  getView().findViewById(R.id.pokedexlist);
@@ -209,9 +214,12 @@ public class Pokedex extends Fragment {
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                                     // start new activity upon clicking an item in the listview
-                                    Intent myIntent = new Intent(getContext(), pokemonscreen.getClass());
+                                    Intent myIntent = new Intent(getContext(), Pokemon.class);
+                                    String name = pokemonNames.get(i);
                                     pokemonId = i + 1;
                                     myIntent.putExtra("pokemonId", pokemonId);
+                                    myIntent.putExtra("pokemonName", name);
+
 
                                     startActivity(myIntent);
 
