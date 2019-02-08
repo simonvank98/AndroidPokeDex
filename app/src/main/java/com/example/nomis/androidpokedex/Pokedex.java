@@ -1,6 +1,11 @@
 package com.example.nomis.androidpokedex;
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,8 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,7 +29,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,6 +39,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -43,6 +50,7 @@ import java.util.ArrayList;
 
 public class Pokedex extends Fragment {
     private int pokemonId;
+    private Pokemon pokemonscreen = new Pokemon();
     //fragment
     @Nullable
     @Override
@@ -108,8 +116,53 @@ public class Pokedex extends Fragment {
         }
 
         getPokemonData();
+        Log.d("debugs", "Oncreate called");
 
 
+    }
+
+    private Bitmap drawabletoBitmap(Drawable sprite) {
+        if (sprite instanceof BitmapDrawable) {
+            BitmapDrawable bitmapSprite = (BitmapDrawable) sprite;
+            if(bitmapSprite.getBitmap() != null) {
+                return bitmapSprite.getBitmap();
+            }
+        }
+        return null;
+    }
+
+    private void saveToInternalStorage(Drawable sprite, int id){
+        ContextWrapper contextWrapper = new ContextWrapper(getContext());
+        File directory = contextWrapper.getDir("sprites", Context.MODE_PRIVATE);
+        File filePath = new File(directory,"pokemon_sprite_" + id + ".png");
+        Bitmap bitmapSprite = drawabletoBitmap(sprite);
+
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(filePath);
+            bitmapSprite.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private BitmapDrawable loadImageFromStorage(int id) {
+        String path = "/data/user/0/com.example.nomis.androidpokedex/app_sprites";
+        Bitmap bitmapSprite = null;
+        try {
+            File f=new File(path, "pokemon_sprite_" + id + ".png");
+            bitmapSprite = BitmapFactory.decodeStream(new FileInputStream(f));
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return new BitmapDrawable(getResources(), bitmapSprite);
     }
 
 
@@ -122,8 +175,6 @@ public class Pokedex extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-
-                            Log.d("debug", "try block triggered");
 
                             JSONArray entriesArray = response.getJSONArray("pokemon_entries");
 
@@ -148,8 +199,6 @@ public class Pokedex extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } finally {
-
-
                             customAdapter = new CustomAdapter();
 
                             ListView pokedexlist = (ListView)  getView().findViewById(R.id.pokedexlist);
@@ -160,7 +209,7 @@ public class Pokedex extends Fragment {
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                                     // start new activity upon clicking an item in the listview
-                                    Intent myIntent = new Intent(getContext(), Pokemon.class);
+                                    Intent myIntent = new Intent(getContext(), pokemonscreen.getClass());
                                     pokemonId = i + 1;
                                     myIntent.putExtra("pokemonId", pokemonId);
 
@@ -169,12 +218,18 @@ public class Pokedex extends Fragment {
                                 }
                             });
 
+
                             Thread webAccessThread = new Thread(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
                                         for(int i = 1; i <= 151; i++) {
-                                            spritesHelper.add(spriteFromWeb(i));
+                                            if(loadImageFromStorage(i) != null){
+                                                spritesHelper.add(loadImageFromStorage(i));
+                                            } else {
+                                                spritesHelper.add(spriteFromWeb(i));
+                                            }
+
                                         }
                                     } catch (Exception e){
                                         e.printStackTrace();
@@ -215,6 +270,7 @@ public class Pokedex extends Fragment {
         try {
             inputStream = (InputStream) new URL(url).getContent();
             Drawable sprite = Drawable.createFromStream(inputStream, "" + id + ".png");
+            saveToInternalStorage(sprite, id);
             return sprite;
         } catch (IOException e) {
             e.printStackTrace();
@@ -246,6 +302,7 @@ public class Pokedex extends Fragment {
             Log.d("debugs", "Array call triggered");
 
             view = getLayoutInflater().inflate(R.layout.customlayout, null);
+
 
             ImageView spriteView = (ImageView) view.findViewById(R.id.spriteView);
             TextView pokemonName = (TextView) view.findViewById(R.id.pokemonName);

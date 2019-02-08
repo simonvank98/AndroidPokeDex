@@ -1,16 +1,9 @@
 package com.example.nomis.androidpokedex;
 
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +17,7 @@ public class Pokemon extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.pokemon);
+        //setContentView(R.layout.pokemon);
         total++;
         String pokemonId= getIntent().getStringExtra("pokemonId");
         Log.d("debug", "Totaal: " + total);
