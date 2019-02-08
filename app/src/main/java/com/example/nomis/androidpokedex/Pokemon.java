@@ -57,7 +57,7 @@ public class Pokemon extends AppCompatActivity {
         pokemonWeightTextView = findViewById(R.id.pokemonWeight);
         pokemonHeightTextView = findViewById(R.id.pokemonHeight);
         pokemonNameTextView = findViewById(R.id.pokemonName);
-        pokemonNameTextView.append(pokemonName);
+        //pokemonNameTextView.append(pokemonName);
 
         mQueue = Volley.newRequestQueue(this);
         jsonParseTwo(pokemonId);
