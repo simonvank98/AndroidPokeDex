@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //    ArrayList<String> pokemonNames = new ArrayList<>();
 //    ArrayList<String> classifications = new ArrayList<>();
 //
-//    CustomAdapter  customAdapter;
+//    PokedexAdapter  pokedexAdapter;
 //
 //    String id = "#-1"; // A default value to show ID is not called correctly. Also prevents nullpointerexceptions.
 //    String pokemonName = "Placeholder"; // Same goes for this string
