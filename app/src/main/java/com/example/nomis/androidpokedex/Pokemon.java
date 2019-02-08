@@ -1,6 +1,10 @@
 package com.example.nomis.androidpokedex;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
@@ -16,6 +20,13 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class Pokemon extends AppCompatActivity {
     private ImageView pokemonSprite;
@@ -47,6 +58,7 @@ public class Pokemon extends AppCompatActivity {
 
         // initialize xml objects
         pokemonSprite = findViewById(R.id.pokemonSprite);
+        pokemonSprite.setImageDrawable(loadImageFromStorage(pokemonId));
         pokemonAbilityTextView = findViewById(R.id.pokemonAblitiy);
         pokemonTypeTextView = findViewById(R.id.pokemonType);
         pokemonDescTextView = findViewById(R.id.pokemonDesc);
@@ -63,6 +75,19 @@ public class Pokemon extends AppCompatActivity {
     private void addFavorite() {
         String rawFavString = pref.getString("favorites", "");
         pref.edit().putString("favorites", pokemonId + "#" + pokemonName + "-").commit();
+    }
+
+    private BitmapDrawable loadImageFromStorage(int id) {
+        String path = "/data/user/0/com.example.nomis.androidpokedex/app_sprites";
+        Bitmap bitmapSprite;
+        try {
+            File f = new File(path, "pokemon_sprite_" + id + ".png");
+            bitmapSprite = BitmapFactory.decodeStream(new FileInputStream(f));
+        }
+        catch (FileNotFoundException e) {
+            return null;
+        }
+        return new BitmapDrawable(getResources(), bitmapSprite);
     }
 
     private void jsonParse(final int id) {

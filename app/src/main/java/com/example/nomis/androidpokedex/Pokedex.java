@@ -164,7 +164,7 @@ public class Pokedex extends Fragment {
         }
     }
 
-    public BitmapDrawable loadImageFromStorage(int id) {
+    private BitmapDrawable loadImageFromStorage(int id) {
         String path = "/data/user/0/com.example.nomis.androidpokedex/app_sprites";
         Bitmap bitmapSprite;
         try {
@@ -268,7 +268,7 @@ public class Pokedex extends Fragment {
         requestQueue.add(request);
     }
 
-    public Drawable spriteFromWeb(int id){
+    private Drawable spriteFromWeb(int id){
         String url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + id + ".png";
 
         InputStream inputStream = null;
