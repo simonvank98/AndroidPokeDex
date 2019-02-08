@@ -82,9 +82,7 @@ public class Pokemon extends AppCompatActivity {
 
     private void addFavorite() {
         String rawFavString = pref.getString("favorites", "");
-        Log.d("Debugs", rawFavString);
         rawFavString = rawFavString + pokemonId + "#" + pokemonName.split(" ")[2] + "-";
-        Log.d("Debugs", rawFavString);
         pref.edit().putString("favorites",  rawFavString).commit();
 
     }
@@ -119,10 +117,8 @@ public class Pokemon extends AppCompatActivity {
             notFoundError.show();
         }
         else {
-            Log.d("debugs", rawFavString);
             if(rawFavString.contains(pokemonId + "#" + pokemonName.split(" ")[2] + "-")) {
                  rawFavString = rawFavString.replace(pokemonId + "#" + pokemonName.split(" ")[2] + "-", "");
-                Log.d("debugs 2", rawFavString);
             }
             String tempString = pref.getString("classifications", "");
             pref.edit().clear().commit();

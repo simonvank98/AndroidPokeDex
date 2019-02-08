@@ -1,6 +1,7 @@
 package com.example.nomis.androidpokedex;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -56,7 +58,28 @@ public class Favorites extends Fragment {
 
         favoritesList = (ListView) getView().findViewById(R.id.favorites_list);
 
+        favoritesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                // start new activity upon clicking an item in the listview
+                Intent myIntent = new Intent(getContext(), Pokemon.class);
+                String name = "#" + favIDs.get(i) + " - " + favNames.get(i);
+                myIntent.putExtra("pokemonId", favIDs.get(i));
+                myIntent.putExtra("pokemonName", name);
+                startActivity(myIntent);
+            }
+        });
+
         favoritesList.setAdapter(favoritesAdapter);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        loadDataFromStorage();
+        favoritesAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -64,8 +87,6 @@ public class Favorites extends Fragment {
         super.onCreate(savedInstanceState);
 
         pref = getActivity().getSharedPreferences("PokemonData", Context.MODE_PRIVATE);
-
-        loadDataFromStorage();
     }
 
     // Load all pokémon that need to be shown in favorites
@@ -74,8 +95,13 @@ public class Favorites extends Fragment {
     // Favorites string format is as follows: ID#FavName-ID#FavName-... etc
     public void loadDataFromStorage() {
 
+        favIDs.clear();
+        favNames.clear();
+        favSprites.clear();
+        favClassifications.clear();
+
         String rawFavString = pref.getString("favorites", "empty");
-        if (rawFavString.equals("empty")) {
+        if (rawFavString.equals("empty") || rawFavString.equals("")) {
             Toast notFoundError = Toast.makeText(getContext(), "No favorite pokémon found.", Toast.LENGTH_LONG);
             notFoundError.show();
         } else {
@@ -89,7 +115,7 @@ public class Favorites extends Fragment {
 
         String rawClassificationString = pref.getString("classifications", "empty");
         if (rawClassificationString.equals("empty")) {
-            Toast notFoundError = Toast.makeText(getContext(), "No classifications found.", Toast.LENGTH_LONG);
+            Toast notFoundError = Toast.makeText(getContext(), "An error occured while processing the classifications.", Toast.LENGTH_LONG);
             notFoundError.show();
         } else {
             String[] classificationArray = rawClassificationString.split("-");
