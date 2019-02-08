@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,8 @@ public class Favorites extends Fragment {
     private ArrayList<String> favNames = new ArrayList<>();
     private ArrayList<String> favClassifications = new ArrayList<>();
 
+    private ListView favoritesList;
+
     private FavoritesAdapter favoritesAdapter;
 
     private SharedPreferences pref;
@@ -44,16 +47,25 @@ public class Favorites extends Fragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        pref = getActivity().getSharedPreferences("PokemonData", Context.MODE_PRIVATE);
-
-        loadDataFromStorage();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         favoritesAdapter = new FavoritesAdapter();
 
         favoritesAdapter.notifyDataSetChanged();
 
+        favoritesList = (ListView) getView().findViewById(R.id.favorites_list);
+
+        favoritesList.setAdapter(favoritesAdapter);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        pref = getActivity().getSharedPreferences("PokemonData", Context.MODE_PRIVATE);
+
+        loadDataFromStorage();
     }
 
     // Load all pokémon that need to be shown in favorites
