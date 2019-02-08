@@ -94,11 +94,13 @@ public class Pokedex extends Fragment {
                 classifications.clear();
                 storedClassification = "";
                 pref.edit().clear().commit();
+                int id = 1;
 
                 for(DataSnapshot classificationSnap : dataSnapshot.getChildren()){
                     Classification cls = classificationSnap.getValue(Classification.class);
                     classifications.add(cls.getClassification() + " Pokémon");
-                    storedClassification = storedClassification + cls.getClassification() + " Pokémon-";
+                    storedClassification = storedClassification + id + "#" + cls.getClassification() + " Pokémon-";
+                    id++;
                 }
                 pref.edit().putString("classifications", storedClassification).commit();
             }
@@ -112,8 +114,7 @@ public class Pokedex extends Fragment {
         requestQueue = Volley.newRequestQueue(getContext());
 
         getPokemonData();
-
-
+        
     }
 
     private void loadClassifications(){
@@ -127,7 +128,7 @@ public class Pokedex extends Fragment {
         } else {
             String[] classificationArray = classificationString.split("-");
             for(int i = 0; i < 151; i++){
-                classifications.add(classificationArray[i]);
+                classifications.add(classificationArray[i].split("#")[1]);
             }
         }
     }
@@ -163,7 +164,7 @@ public class Pokedex extends Fragment {
         }
     }
 
-    private BitmapDrawable loadImageFromStorage(int id) {
+    public BitmapDrawable loadImageFromStorage(int id) {
         String path = "/data/user/0/com.example.nomis.androidpokedex/app_sprites";
         Bitmap bitmapSprite;
         try {
@@ -175,8 +176,6 @@ public class Pokedex extends Fragment {
         }
         return new BitmapDrawable(getResources(), bitmapSprite);
     }
-
-
 
     private void getPokemonData() {
         String url = "https://pokeapi.co/api/v2/pokedex/kanto/";
@@ -202,7 +201,6 @@ public class Pokedex extends Fragment {
                                         pokemonName.substring(1); // Capitalize first letter.
 
                                 pokemonName = id + " - " + pokemonName;
-
                                 pokemonNames.add(pokemonName);
 
                             }
