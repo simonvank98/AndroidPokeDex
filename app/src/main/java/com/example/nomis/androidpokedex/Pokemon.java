@@ -165,7 +165,7 @@ public class Pokemon extends AppCompatActivity {
 
                                 String typeName = type.getString("name");
 
-                                pokemonTypeTextView.append(typeName + "\n");
+                                pokemonTypeTextView.append("- " + typeName + "\n");
                             }
 
                             // ability names
