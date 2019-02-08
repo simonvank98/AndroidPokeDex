@@ -17,7 +17,7 @@ public class Pokemon extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.pokemon);
+        //setContentView(R.layout.pokemon);
         total++;
         String pokemonId= getIntent().getStringExtra("pokemonId");
         Log.d("debug", "Totaal: " + total);

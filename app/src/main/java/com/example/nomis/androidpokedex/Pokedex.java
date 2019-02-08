@@ -308,9 +308,7 @@ public class Pokedex extends Fragment {
             TextView pokemonName = (TextView) view.findViewById(R.id.pokemonName);
             TextView pokemonClassification = (TextView) view.findViewById(R.id.pokemonClassification);
 
-            spriteView.setImageBitmap();
-
-            //spriteView.setImageDrawable(sprites.get(i));
+            spriteView.setImageDrawable(sprites.get(i));
             pokemonName.setText(pokemonNames.get(i));
             pokemonClassification.setText(classifications.get(i));
 
