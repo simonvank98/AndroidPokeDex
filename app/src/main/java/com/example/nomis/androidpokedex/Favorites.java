@@ -1,21 +1,31 @@
 package com.example.nomis.androidpokedex;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class Favorites extends Fragment {
@@ -24,6 +34,8 @@ public class Favorites extends Fragment {
     private ArrayList<Integer> favIDs = new ArrayList<>();
     private ArrayList<String> favNames = new ArrayList<>();
     private ArrayList<String> favClassifications = new ArrayList<>();
+
+    private ListView favoritesList;
 
     private FavoritesAdapter favoritesAdapter;
 
@@ -37,26 +49,59 @@ public class Favorites extends Fragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        pref = getActivity().getSharedPreferences("PokemonData",Context.MODE_PRIVATE);
-
-        loadFromStorage();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         favoritesAdapter = new FavoritesAdapter();
 
         favoritesAdapter.notifyDataSetChanged();
 
+        favoritesList = (ListView) getView().findViewById(R.id.favorites_list);
+
+        favoritesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                // start new activity upon clicking an item in the listview
+                Intent myIntent = new Intent(getContext(), Pokemon.class);
+                String name = "#" + favIDs.get(i) + " - " + favNames.get(i);
+                myIntent.putExtra("pokemonId", favIDs.get(i));
+                myIntent.putExtra("pokemonName", name);
+                startActivity(myIntent);
+            }
+        });
+
+        favoritesList.setAdapter(favoritesAdapter);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        loadDataFromStorage();
+        favoritesAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        pref = getActivity().getSharedPreferences("PokemonData", Context.MODE_PRIVATE);
     }
 
     // Load all pokémon that need to be shown in favorites
 
-    // Classificationstring ID#ClassificationName-ID#ClassificationName-... etc
-    // Favorites string ID#FavName-ID#FavName-... etc
-    public void loadFromStorage() {
+    // Classification string format is as follows: ID#ClassificationName-ID#ClassificationName-... etc
+    // Favorites string format is as follows: ID#FavName-ID#FavName-... etc
+    public void loadDataFromStorage() {
+
+        favIDs.clear();
+        favNames.clear();
+        favSprites.clear();
+        favClassifications.clear();
 
         String rawFavString = pref.getString("favorites", "empty");
-        if (rawFavString.equals("empty")) {
+        if (rawFavString.equals("empty") || rawFavString.equals("")) {
             Toast notFoundError = Toast.makeText(getContext(), "No favorite pokémon found.", Toast.LENGTH_LONG);
             notFoundError.show();
         } else {
@@ -64,11 +109,13 @@ public class Favorites extends Fragment {
             for(int i = 0; i < favoriteArray.length; i++){
                 favIDs.add(Integer.valueOf(favoriteArray[i].split("#")[0]));
                 favNames.add(favoriteArray[i].split("#")[1]);
+                favSprites.add(loadImageFromStorage(Integer.valueOf(favoriteArray[i].split("#")[0])));
             }
         }
-        String rawClassificationString = pref.getString("classification", "empty");
+
+        String rawClassificationString = pref.getString("classifications", "empty");
         if (rawClassificationString.equals("empty")) {
-            Toast notFoundError = Toast.makeText(getContext(), "No favorite pokémon found.", Toast.LENGTH_LONG);
+            Toast notFoundError = Toast.makeText(getContext(), "An error occured while processing the classifications.", Toast.LENGTH_LONG);
             notFoundError.show();
         } else {
             String[] classificationArray = rawClassificationString.split("-");
@@ -76,6 +123,19 @@ public class Favorites extends Fragment {
                 favClassifications.add(classificationArray[i]);
             }
         }
+    }
+
+    private BitmapDrawable loadImageFromStorage(int id) {
+        String path = "/data/user/0/com.example.nomis.androidpokedex/app_sprites";
+        Bitmap bitmapSprite;
+        try {
+            File f = new File(path, "pokemon_sprite_" + id + ".png");
+            bitmapSprite = BitmapFactory.decodeStream(new FileInputStream(f));
+        }
+        catch (FileNotFoundException e) {
+            return null;
+        }
+        return new BitmapDrawable(getResources(), bitmapSprite);
     }
 
     class FavoritesAdapter extends BaseAdapter {
@@ -105,9 +165,14 @@ public class Favorites extends Fragment {
             TextView pokemonName = (TextView) view.findViewById(R.id.pokemonName);
             TextView pokemonClassification = (TextView) view.findViewById(R.id.pokemonClassification);
 
+            for(int j = 0; j < favClassifications.size(); j++){
+                if(Integer.valueOf(favClassifications.get(j).split("#")[0]).equals(favIDs.get(i))){
+                    pokemonClassification.setText(favClassifications.get(j).split("#")[1]);
+                }
+            }
+
             spriteView.setImageDrawable(favSprites.get(i));
             pokemonName.setText(favNames.get(i));
-            pokemonClassification.setText(favClassifications.get(i));
 
             spriteView.setScaleX((float)1.5);
             spriteView.setScaleY((float)1.5);
