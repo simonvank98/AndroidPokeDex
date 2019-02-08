@@ -70,8 +70,8 @@ public class Favorites extends Fragment {
 
     // Load all pokémon that need to be shown in favorites
 
-    // Classificationstring ID#ClassificationName-ID#ClassificationName-... etc
-    // Favorites string ID#FavName-ID#FavName-... etc
+    // Classification string format is as follows: ID#ClassificationName-ID#ClassificationName-... etc
+    // Favorites string format is as follows: ID#FavName-ID#FavName-... etc
     public void loadDataFromStorage() {
 
         String rawFavString = pref.getString("favorites", "empty");
@@ -140,17 +140,13 @@ public class Favorites extends Fragment {
             TextView pokemonClassification = (TextView) view.findViewById(R.id.pokemonClassification);
 
             for(int j = 0; j < favClassifications.size(); j++){
-                Log.d("debugs", "Classification ID: " + favClassifications.get(j).split("#")[0]);
-                Log.d("debugs", "Favorite ID: " + favIDs.get(i).toString());
                 if(Integer.valueOf(favClassifications.get(j).split("#")[0]).equals(favIDs.get(i))){
-                    Log.d("debugs", "Matched!");
                     pokemonClassification.setText(favClassifications.get(j).split("#")[1]);
                 }
             }
 
             spriteView.setImageDrawable(favSprites.get(i));
             pokemonName.setText(favNames.get(i));
-
 
             spriteView.setScaleX((float)1.5);
             spriteView.setScaleY((float)1.5);

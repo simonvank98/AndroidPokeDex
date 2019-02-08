@@ -76,6 +76,8 @@ public class Pokemon extends AppCompatActivity {
         mQueue = Volley.newRequestQueue(this);
         jsonParseTwo(pokemonId);
         jsonParse(pokemonId);
+
+        checkFavoriteStatus();
     }
 
     private void addFavorite() {
@@ -91,32 +93,40 @@ public class Pokemon extends AppCompatActivity {
         if(favoriteStatus){
             removeFavorite();
             favoriteButton.setImageResource(R.drawable.star);
+            favoriteStatus = false;
         }
         else {
             addFavorite();
             favoriteButton.setImageResource(R.drawable.star_pressed);
+            favoriteStatus = true;
         }
     }
 
     private void checkFavoriteStatus() {
-
+        String rawFavString = pref.getString("favorites", "");
+        if (rawFavString.contains(pokemonName.split(" ")[2])){
+            favoriteStatus = true;
+            favoriteButton.setImageResource(R.drawable.star_pressed);
+        }
     }
 
 
 
     private void removeFavorite(){
-
-        Log.d("debugs" ,"this is called");
         String rawFavString = pref.getString("favorites", "empty");
         if(rawFavString.equals("empty")) {
             Toast notFoundError = Toast.makeText(this, "The pokemon is not a favorite.", Toast.LENGTH_LONG);
             notFoundError.show();
         }
         else {
-            if(rawFavString.contains(pokemonId + "#" + pokemonName + "-")) {
-                rawFavString.replace(pokemonId + "#" + pokemonName + "-", "");
+            Log.d("debugs", rawFavString);
+            if(rawFavString.contains(pokemonId + "#" + pokemonName.split(" ")[2] + "-")) {
+                 rawFavString = rawFavString.replace(pokemonId + "#" + pokemonName.split(" ")[2] + "-", "");
+                Log.d("debugs 2", rawFavString);
             }
+            String tempString = pref.getString("classifications", "");
             pref.edit().clear().commit();
+            pref.edit().putString("classifications", tempString).commit();
             pref.edit().putString("favorites", rawFavString).commit();
         }
     }
