@@ -7,6 +7,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,9 +28,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 public class Pokemon extends AppCompatActivity {
     private ImageView pokemonSprite;
@@ -38,6 +38,8 @@ public class Pokemon extends AppCompatActivity {
     private TextView pokemonDescTextView;
     private TextView pokemonWeightTextView;
     private TextView pokemonHeightTextView;
+    private ImageButton favoriteButton;
+    private Boolean favoriteStatus;
 
     private String pokemonName;
     private int pokemonId;
@@ -48,6 +50,8 @@ public class Pokemon extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pokemon);
+
+        favoriteStatus = false;
 
         pref = this.getSharedPreferences("PokemonData", MODE_PRIVATE);
 
@@ -66,6 +70,7 @@ public class Pokemon extends AppCompatActivity {
         pokemonWeightTextView = findViewById(R.id.pokemonWeight);
         pokemonHeightTextView = findViewById(R.id.pokemonHeight);
         pokemonNameTextView = findViewById(R.id.pokemonName);
+        favoriteButton = findViewById(R.id.favoriteButton);
         pokemonNameTextView.append(pokemonName);
 
         mQueue = Volley.newRequestQueue(this);
@@ -74,8 +79,21 @@ public class Pokemon extends AppCompatActivity {
     }
 
     private void addFavorite() {
-        pref.edit().putString("favorites", pokemonId + "#" + pokemonName + "-").commit();
+        pref.edit().putString("favorites", pokemonId + "#" + pokemonName.split(" ")[2] + "-").commit();
     }
+
+    public void onClickFavorite(View v) {
+        if(favoriteStatus){
+            removeFavorite();
+            favoriteButton.setImageResource(R.drawable.star);
+        }
+        else {
+            addFavorite();
+            favoriteButton.setImageResource(R.drawable.star_pressed);
+        }
+    }
+
+
 
     private void removeFavorite(){
         String rawFavString = pref.getString("favorites", "empty");

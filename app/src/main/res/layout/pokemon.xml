@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/darker_gray">
 
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -42,6 +43,14 @@
             android:textSize="25sp"
             android:layout_marginLeft="50dp"
             android:layout_margin="30dp" />
+
+        <ImageButton android:id="@+id/favoriteButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="50dp"
+            android:src="@drawable/star"
+            android:background="#00ffffff"
+            android:onClick="onClickFavorite"/>
     </LinearLayout>
 
     <LinearLayout
