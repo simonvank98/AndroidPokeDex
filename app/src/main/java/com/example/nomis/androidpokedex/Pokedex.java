@@ -305,7 +305,6 @@ public class Pokedex extends Fragment {
 
             view = getLayoutInflater().inflate(R.layout.customlayout, null);
 
-
             ImageView spriteView = (ImageView) view.findViewById(R.id.spriteView);
             TextView pokemonName = (TextView) view.findViewById(R.id.pokemonName);
             TextView pokemonClassification = (TextView) view.findViewById(R.id.pokemonClassification);

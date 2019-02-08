@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class Favorites extends Fragment {
 
     ArrayList<Drawable> favSprites = new ArrayList<>();
-    ArrayList<Drawable> favSpritesHelper = new ArrayList<>();
+    ArrayList<Integer> favIDs = new ArrayList<>();
     ArrayList<String> favNames = new ArrayList<>();
     ArrayList<String> favClassifications = new ArrayList<>();
 
@@ -40,21 +40,40 @@ public class Favorites extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pref = getActivity().getPreferences(Context.MODE_PRIVATE);
+
+        loadFromStorage();
+
+        favoritesAdapter = new FavoritesAdapter();
+
+        favoritesAdapter.notifyDataSetChanged();
+
     }
 
     // Load all pokémon that need to be shown in favorites
+
+    // Classificationstring ID#ClassificationName-ID#ClassificationName-... etc
+    // Favorites string ID#FavName-ID#FavName-... etc
     public void loadFromStorage() {
 
-        int favID;
         String rawFavString = pref.getString("favorites", "empty");
         if (rawFavString.equals("empty")) {
-            Toast internetError = Toast.makeText(getContext(), "No favorite pokémon found.", Toast.LENGTH_LONG);
-            internetError.show();
+            Toast notFoundError = Toast.makeText(getContext(), "No favorite pokémon found.", Toast.LENGTH_LONG);
+            notFoundError.show();
         } else {
             String[] favoriteArray = rawFavString.split("-");
             for(int i = 0; i < favoriteArray.length; i++){
-                favID = Integer.valueOf(favoriteArray[i].split("#")[0]);
-
+                favIDs.add(Integer.valueOf(favoriteArray[i].split("#")[0]));
+                favNames.add(favoriteArray[i].split("#")[1]);
+            }
+        }
+        String rawClassificationString = pref.getString("classification", "empty");
+        if (rawClassificationString.equals("empty")) {
+            Toast notFoundError = Toast.makeText(getContext(), "No favorite pokémon found.", Toast.LENGTH_LONG);
+            notFoundError.show();
+        } else {
+            String[] classificationArray = rawClassificationString.split("-");
+            for(int i = 0; i < classificationArray.length; i++){
+                favClassifications.add(classificationArray[i]);
             }
         }
     }
