@@ -61,13 +61,8 @@ public class Pokemon extends AppCompatActivity {
     }
 
     private void addFavorite() {
-        String rawFavString = pref.getString("favorites", "empty");
-        if (rawFavString.equals("empty")) {
-
-            pref.edit().putString("favorites", pokemonId + "#" + pokemonName + "-").commit();
-        } else {
-
-        }
+        String rawFavString = pref.getString("favorites", "");
+        pref.edit().putString("favorites", pokemonId + "#" + pokemonName + "-").commit();
     }
 
     private void jsonParse(final int id) {
