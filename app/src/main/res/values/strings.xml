@@ -3,7 +3,7 @@
     <string name="app_name">Pokélist</string>
     <string name="pokedexscreen_name">Pokedex</string>
     <string name="favoritesscreen_name">Favorites</string>
-    <string name="pokenav">Pokenav</string>
+    <string name="pokenav">Pokénav</string>
     <string name="pokedex">Pokédex</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

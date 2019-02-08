@@ -3,6 +3,7 @@ package com.example.nomis.androidpokedex;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -18,11 +19,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -30,7 +31,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,13 +51,6 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class Pokedex extends Fragment {
-    private int pokemonId;
-    //fragment
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.pokedex, null);
-    }
 
     ArrayList<Drawable> sprites = new ArrayList<>();
     ArrayList<Drawable> spritesHelper = new ArrayList<>();
@@ -65,18 +58,32 @@ public class Pokedex extends Fragment {
     ArrayList<String> classifications = new ArrayList<>();
 
     DatabaseReference dbclassifications;
+    String storedClassification;
 
-    CustomAdapter  customAdapter;
+    SharedPreferences pref;
+
+    PokedexAdapter pokedexAdapter;
 
     String id = "#-1"; // A default value to show ID is not called correctly. Also prevents nullpointerexceptions.
     String pokemonName = "Placeholder"; // Same goes for this string
 
     private RequestQueue requestQueue;
 
+    private int pokemonId;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.pokedex, null);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        pref = getActivity().getPreferences(Context.MODE_PRIVATE);
 
         dbclassifications = FirebaseDatabase.getInstance().getReference("classifications");
 
@@ -85,12 +92,17 @@ public class Pokedex extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 classifications.clear();
+                storedClassification = "";
+                pref.edit().clear().commit();
+                int id = 1;
 
                 for(DataSnapshot classificationSnap : dataSnapshot.getChildren()){
                     Classification cls = classificationSnap.getValue(Classification.class);
-
                     classifications.add(cls.getClassification() + " Pokémon");
+                    storedClassification = storedClassification + id + "#" + cls.getClassification() + " Pokémon-";
+                    id++;
                 }
+                pref.edit().putString("classifications", storedClassification).commit();
             }
 
             @Override
@@ -101,25 +113,24 @@ public class Pokedex extends Fragment {
 
         requestQueue = Volley.newRequestQueue(getContext());
 
-        classifications.add("Seed pokémon");
-        classifications.add("Seed pokémon");
-        classifications.add("Seed pokémon");
-        classifications.add("Lizard pokémon");
-        classifications.add("Flame pokémon");
-        classifications.add("Flame pokémon");
-        classifications.add("Tiny turtle pokémon");
-        classifications.add("Turtle pokémon");
-        classifications.add("Turtle pokémon");
-        classifications.add("Worm pokémon");
-
-        for(int i= 0; i < 141; i++){
-            classifications.add("test");
-        }
-
         getPokemonData();
-        Log.d("debugs", "Oncreate called");
+        
+    }
 
-
+    private void loadClassifications(){
+        String classificationString = pref.getString("classifications", "empty");
+        if (classificationString.equals("empty")) {
+            Toast internetError = Toast.makeText(getContext(), "No internet connection detected. Try again.", Toast.LENGTH_LONG);
+            for(int i = 0; i < 151; i++){
+                classifications.add("");
+            }
+            internetError.show();
+        } else {
+            String[] classificationArray = classificationString.split("-");
+            for(int i = 0; i < 151; i++){
+                classifications.add(classificationArray[i].split("#")[1]);
+            }
+        }
     }
 
     private Bitmap drawabletoBitmap(Drawable sprite) {
@@ -153,20 +164,18 @@ public class Pokedex extends Fragment {
         }
     }
 
-    private BitmapDrawable loadImageFromStorage(int id) {
+    public BitmapDrawable loadImageFromStorage(int id) {
         String path = "/data/user/0/com.example.nomis.androidpokedex/app_sprites";
-        Bitmap bitmapSprite = null;
+        Bitmap bitmapSprite;
         try {
             File f=new File(path, "pokemon_sprite_" + id + ".png");
             bitmapSprite = BitmapFactory.decodeStream(new FileInputStream(f));
         }
         catch (FileNotFoundException e) {
-            e.printStackTrace();
+            return null;
         }
         return new BitmapDrawable(getResources(), bitmapSprite);
     }
-
-
 
     private void getPokemonData() {
         String url = "https://pokeapi.co/api/v2/pokedex/kanto/";
@@ -176,8 +185,6 @@ public class Pokedex extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-
-                            Log.d("debug", "try block triggered");
 
                             JSONArray entriesArray = response.getJSONArray("pokemon_entries");
 
@@ -194,7 +201,6 @@ public class Pokedex extends Fragment {
                                         pokemonName.substring(1); // Capitalize first letter.
 
                                 pokemonName = id + " - " + pokemonName;
-
                                 pokemonNames.add(pokemonName);
 
                             }
@@ -202,9 +208,7 @@ public class Pokedex extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } finally {
-
-
-                            customAdapter = new CustomAdapter();
+                            pokedexAdapter = new PokedexAdapter();
 
                             ListView pokedexlist = (ListView)  getView().findViewById(R.id.pokedexlist);
 
@@ -215,17 +219,13 @@ public class Pokedex extends Fragment {
 
                                     // start new activity upon clicking an item in the listview
                                     Intent myIntent = new Intent(getContext(), Pokemon.class);
-                                    String name = pokemonNames.get(i);
                                     pokemonId = i + 1;
                                     myIntent.putExtra("pokemonId", pokemonId);
-                                    myIntent.putExtra("pokemonName", name);
-
 
                                     startActivity(myIntent);
 
                                 }
                             });
-
 
                             Thread webAccessThread = new Thread(new Runnable() {
                                 @Override
@@ -251,11 +251,9 @@ public class Pokedex extends Fragment {
                                 sprites = spritesHelper;
                             }
 
-                            customAdapter.notifyDataSetChanged();
+                            pokedexAdapter.notifyDataSetChanged();
 
-
-
-                            pokedexlist.setAdapter(customAdapter);
+                            pokedexlist.setAdapter(pokedexAdapter);
 
                         }
                     }
@@ -266,19 +264,17 @@ public class Pokedex extends Fragment {
             }
         });
 
-
-
         requestQueue.add(request);
-
     }
 
     public Drawable spriteFromWeb(int id){
         String url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + id + ".png";
+
         InputStream inputStream = null;
         try {
             inputStream = (InputStream) new URL(url).getContent();
             Drawable sprite = Drawable.createFromStream(inputStream, "" + id + ".png");
-            saveToInternalStorage(sprite, id);
+            saveToInternalStorage(sprite, id); //Once it is loaded, save it to internal storage so it will start faster in future.
             return sprite;
         } catch (IOException e) {
             e.printStackTrace();
@@ -286,7 +282,7 @@ public class Pokedex extends Fragment {
         return null;
     }
 
-    class CustomAdapter extends BaseAdapter {
+    class PokedexAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
@@ -307,14 +303,16 @@ public class Pokedex extends Fragment {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
 
-            Log.d("debugs", "Array call triggered");
-
             view = getLayoutInflater().inflate(R.layout.customlayout, null);
 
 
             ImageView spriteView = (ImageView) view.findViewById(R.id.spriteView);
             TextView pokemonName = (TextView) view.findViewById(R.id.pokemonName);
             TextView pokemonClassification = (TextView) view.findViewById(R.id.pokemonClassification);
+
+            if (classifications.isEmpty()) {
+                loadClassifications();
+            }
 
             spriteView.setImageDrawable(sprites.get(i));
             pokemonName.setText(pokemonNames.get(i));
