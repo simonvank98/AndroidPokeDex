@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -73,8 +74,22 @@ public class Pokemon extends AppCompatActivity {
     }
 
     private void addFavorite() {
-        String rawFavString = pref.getString("favorites", "");
         pref.edit().putString("favorites", pokemonId + "#" + pokemonName + "-").commit();
+    }
+
+    private void removeFavorite(){
+        String rawFavString = pref.getString("favorites", "empty");
+        if(rawFavString.equals("empty")) {
+            Toast notFoundError = Toast.makeText(this, "The pokemon is not a favorite.", Toast.LENGTH_LONG);
+            notFoundError.show();
+        }
+        else {
+            if(rawFavString.contains(pokemonId + "#" + pokemonName + "-")) {
+                rawFavString.replace(pokemonId + "#" + pokemonName + "-", "");
+            }
+            pref.edit().clear().commit();
+            pref.edit().putString("favorites", rawFavString).commit();
+        }
     }
 
     private BitmapDrawable loadImageFromStorage(int id) {
