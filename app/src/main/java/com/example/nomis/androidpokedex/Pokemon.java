@@ -79,7 +79,12 @@ public class Pokemon extends AppCompatActivity {
     }
 
     private void addFavorite() {
-        pref.edit().putString("favorites", pokemonId + "#" + pokemonName.split(" ")[2] + "-").commit();
+        String rawFavString = pref.getString("favorites", "");
+        Log.d("Debugs", rawFavString);
+        rawFavString = rawFavString + pokemonId + "#" + pokemonName.split(" ")[2] + "-";
+        Log.d("Debugs", rawFavString);
+        pref.edit().putString("favorites",  rawFavString).commit();
+
     }
 
     public void onClickFavorite(View v) {
@@ -93,9 +98,15 @@ public class Pokemon extends AppCompatActivity {
         }
     }
 
+    private void checkFavoriteStatus() {
+
+    }
+
 
 
     private void removeFavorite(){
+
+        Log.d("debugs" ,"this is called");
         String rawFavString = pref.getString("favorites", "empty");
         if(rawFavString.equals("empty")) {
             Toast notFoundError = Toast.makeText(this, "The pokemon is not a favorite.", Toast.LENGTH_LONG);

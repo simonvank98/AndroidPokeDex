@@ -139,11 +139,18 @@ public class Favorites extends Fragment {
             TextView pokemonName = (TextView) view.findViewById(R.id.pokemonName);
             TextView pokemonClassification = (TextView) view.findViewById(R.id.pokemonClassification);
 
-            Log.d("debugs ", String.valueOf(favSprites.size()));
+            for(int j = 0; j < favClassifications.size(); j++){
+                Log.d("debugs", "Classification ID: " + favClassifications.get(j).split("#")[0]);
+                Log.d("debugs", "Favorite ID: " + favIDs.get(i).toString());
+                if(Integer.valueOf(favClassifications.get(j).split("#")[0]).equals(favIDs.get(i))){
+                    Log.d("debugs", "Matched!");
+                    pokemonClassification.setText(favClassifications.get(j).split("#")[1]);
+                }
+            }
 
             spriteView.setImageDrawable(favSprites.get(i));
             pokemonName.setText(favNames.get(i));
-            pokemonClassification.setText(favClassifications.get(i));
+
 
             spriteView.setScaleX((float)1.5);
             spriteView.setScaleY((float)1.5);

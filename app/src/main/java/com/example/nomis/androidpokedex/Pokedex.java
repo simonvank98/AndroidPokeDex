@@ -93,7 +93,11 @@ public class Pokedex extends Fragment {
 
                 classifications.clear();
                 storedClassification = "";
+
+                // Clear the classifications but not the favorites.
+                String tempstring = pref.getString("favorites", "");
                 pref.edit().clear().commit();
+                pref.edit().putString("favorites", tempstring).commit();
                 int id = 1;
 
                 for(DataSnapshot classificationSnap : dataSnapshot.getChildren()){
