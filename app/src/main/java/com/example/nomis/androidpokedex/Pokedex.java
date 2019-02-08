@@ -52,20 +52,20 @@ import java.util.ArrayList;
 
 public class Pokedex extends Fragment {
 
-    ArrayList<Drawable> sprites = new ArrayList<>();
-    ArrayList<Drawable> spritesHelper = new ArrayList<>();
-    ArrayList<String> pokemonNames = new ArrayList<>();
-    ArrayList<String> classifications = new ArrayList<>();
+    private ArrayList<Drawable> sprites = new ArrayList<>();
+    private ArrayList<Drawable> spritesHelper = new ArrayList<>();
+    private ArrayList<String> pokemonNames = new ArrayList<>();
+    private ArrayList<String> classifications = new ArrayList<>();
 
-    DatabaseReference dbclassifications;
-    String storedClassification;
+    private DatabaseReference dbclassifications;
 
-    SharedPreferences pref;
+    private String storedClassification;
+    private SharedPreferences pref;
 
-    PokedexAdapter pokedexAdapter;
+    private PokedexAdapter pokedexAdapter;
 
-    String id = "#-1"; // A default value to show ID is not called correctly. Also prevents nullpointerexceptions.
-    String pokemonName = "Placeholder"; // Same goes for this string
+    private String id = "#-1"; // A default value to show ID is not called correctly. Also prevents nullpointerexceptions.
+    private String pokemonName = "Placeholder"; // Same goes for this string
 
     private RequestQueue requestQueue;
 
@@ -83,7 +83,7 @@ public class Pokedex extends Fragment {
         super.onCreate(savedInstanceState);
 
 
-        pref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        pref = getActivity().getSharedPreferences("PokemonData", Context.MODE_PRIVATE);
 
         dbclassifications = FirebaseDatabase.getInstance().getReference("classifications");
 
@@ -220,8 +220,9 @@ public class Pokedex extends Fragment {
                                     // start new activity upon clicking an item in the listview
                                     Intent myIntent = new Intent(getContext(), Pokemon.class);
                                     pokemonId = i + 1;
+                                    String name = pokemonNames.get(i);
                                     myIntent.putExtra("pokemonId", pokemonId);
-
+                                    myIntent.putExtra("pokemonName", name);
                                     startActivity(myIntent);
 
                                 }

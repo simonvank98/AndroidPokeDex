@@ -20,14 +20,14 @@ import java.util.ArrayList;
 
 public class Favorites extends Fragment {
 
-    ArrayList<Drawable> favSprites = new ArrayList<>();
-    ArrayList<Integer> favIDs = new ArrayList<>();
-    ArrayList<String> favNames = new ArrayList<>();
-    ArrayList<String> favClassifications = new ArrayList<>();
+    private ArrayList<Drawable> favSprites = new ArrayList<>();
+    private ArrayList<Integer> favIDs = new ArrayList<>();
+    private ArrayList<String> favNames = new ArrayList<>();
+    private ArrayList<String> favClassifications = new ArrayList<>();
 
-    FavoritesAdapter favoritesAdapter;
+    private FavoritesAdapter favoritesAdapter;
 
-    SharedPreferences pref;
+    private SharedPreferences pref;
 
     //fragment
     @Nullable
@@ -39,7 +39,7 @@ public class Favorites extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        pref = getActivity().getSharedPreferences("PokemonData",Context.MODE_PRIVATE);
 
         loadFromStorage();
 
@@ -100,7 +100,6 @@ public class Favorites extends Fragment {
         public View getView(int i, View view, ViewGroup viewGroup) {
 
             view = getLayoutInflater().inflate(R.layout.customlayout, null);
-
 
             ImageView spriteView = (ImageView) view.findViewById(R.id.spriteView);
             TextView pokemonName = (TextView) view.findViewById(R.id.pokemonName);

@@ -1,15 +1,8 @@
 package com.example.nomis.androidpokedex;
 
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,10 +17,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 public class Pokemon extends AppCompatActivity {
     private ImageView pokemonSprite;
     private RequestQueue mQueue;
@@ -38,16 +27,23 @@ public class Pokemon extends AppCompatActivity {
     private TextView pokemonWeightTextView;
     private TextView pokemonHeightTextView;
 
+    private String pokemonName;
+    private int pokemonId;
+
+    private SharedPreferences pref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pokemon);
 
+        pref = this.getSharedPreferences("PokemonData", MODE_PRIVATE);
+
         Bundle extras = getIntent().getExtras();
-        int pokemonId = extras.getInt("pokemonId");
+        pokemonId = extras.getInt("pokemonId");
 
         // pokemon name with #number
-        String pokemonName = extras.getString("pokemonName");
+        pokemonName = extras.getString("pokemonName");
 
         // initialize xml objects
         pokemonSprite = findViewById(R.id.pokemonSprite);
@@ -57,11 +53,21 @@ public class Pokemon extends AppCompatActivity {
         pokemonWeightTextView = findViewById(R.id.pokemonWeight);
         pokemonHeightTextView = findViewById(R.id.pokemonHeight);
         pokemonNameTextView = findViewById(R.id.pokemonName);
-        //pokemonNameTextView.append(pokemonName);
+        pokemonNameTextView.append(pokemonName);
 
         mQueue = Volley.newRequestQueue(this);
         jsonParseTwo(pokemonId);
         jsonParse(pokemonId);
+    }
+
+    private void addFavorite() {
+        String rawFavString = pref.getString("favorites", "empty");
+        if (rawFavString.equals("empty")) {
+
+            pref.edit().putString("favorites", pokemonId + "#" + pokemonName + "-").commit();
+        } else {
+
+        }
     }
 
     private void jsonParse(final int id) {
